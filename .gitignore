@@ -1,0 +1,5 @@
+.env
+/node_modules/
+/.history/
+yarn.lock
+yarn-error.log
