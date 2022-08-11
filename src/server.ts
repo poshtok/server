@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import { createServer } from "http";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import express, { Application } from "express";
+import express, { Application ,Request,Response} from "express";
 import { ApolloServer, gql } from "apollo-server-express";
 import compression from "compression";
 import cors from "cors";
@@ -54,6 +54,9 @@ const resolvers = {
   app.use(express.urlencoded({extended:true}))
   app.post("/contactus",contactUs);
   app.post("/prelunchsignup",preSignup)
+  app.get("/test",(req:Request,res:Response)=>{
+   return res.send("it's working")
+  })
 
   const httpServer = createServer(app);
 
