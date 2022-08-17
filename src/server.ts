@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import { createServer } from "http";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import express, { Application ,Request,Response} from "express";
+import express, { Application ,request,Request,response,Response} from "express";
 import { ApolloServer, gql } from "apollo-server-express";
 import compression from "compression";
 import cors from "cors";
@@ -12,40 +12,8 @@ import formatError from "./utils/lib/formatError";
 import Database from "./utils/lib/db";
 import preSignup from "./services/preLunchSignup";
 import contactUs from "./services/contactUs";
-
-// import resolvers from "./resolvers";
-// import typeDefs from "./typeDefs";
-const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
-
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`;
-const books = [
-  {
-    title: "The Awakening",
-    author: "Kate Chopin",
-  },
-  {
-    title: "City of Glass",
-    author: "Paul Auster",
-  },
-];
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
+import {resolvers,typeDefs} from "./schema"
+import dataSources from "./datasources";
 (async function () {
   const app:Application = express();
   app.use(compression());
@@ -67,9 +35,15 @@ const resolvers = {
 
   const server = new ApolloServer({
     schema,
-    context() {
-      // lookup userId by token, etc.
-    },
+   context:({req,res})=>({
+    res,
+    req,
+    dataSources,
+    engine:{
+      reportSchema:true
+    }
+   }),
+    
     validationRules: [depthLimit(7)],
     csrfPrevention: true,
     cache: "bounded",
