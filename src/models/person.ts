@@ -12,6 +12,10 @@ country:{
 fullName:{
     type:String
 },
+emailVerified:{
+    type:Boolean,
+    default:false
+},
 user:{
     type:Schema.Types.ObjectId
 }

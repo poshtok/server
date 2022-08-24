@@ -2,8 +2,7 @@ import {Request,Response,NextFunction} from "express"
 import __PreLunchUser from "../models/prelunchUsers"
 const preSignup =async(req:Request,res:Response,next:NextFunction)=>{
 const {email,fullName} = req.body
-console.log("it got here")
-if(!email && fullName){
+if(!email && !fullName){
     return res.status(400).send("all fields are required")
 }
 try {

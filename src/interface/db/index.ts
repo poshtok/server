@@ -2,7 +2,9 @@ import { Date, ObjectId } from "mongoose"
 
 export interface user {
     email:string,
-    password:string
+    password:string,
+    emailVerificationCode:number
+    emailVerificationExpires:Date
 }
 export interface PersonM {
     phone:string
@@ -11,4 +13,5 @@ export interface PersonM {
     userName:string
     DOB:Date
     user:ObjectId
+    emailVerified:Boolean
 }

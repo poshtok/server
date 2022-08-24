@@ -14,12 +14,14 @@ import preSignup from "./services/preLunchSignup";
 import contactUs from "./services/contactUs";
 import {resolvers,typeDefs} from "./schema"
 import dataSources from "./datasources";
+import isAuth from "./utils/lib/auth"
 (async function () {
   const app:Application = express();
   app.use(compression());
   app.use(cors());
   app.use(express.json({limit:"100mb"}))
   app.use(express.urlencoded({extended:true}))
+  app.use(isAuth)
   app.post("/contactus",contactUs);
   app.post("/prelunchsignup",preSignup)
   app.get("/test",(req:Request,res:Response)=>{
@@ -41,14 +43,14 @@ import dataSources from "./datasources";
     dataSources,
     engine:{
       reportSchema:true
-    }
+    },
    }),
-    
     validationRules: [depthLimit(7)],
     csrfPrevention: true,
     cache: "bounded",
     plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
     formatError,
+    introspection:true//turn this to false on production
 
   });
 
