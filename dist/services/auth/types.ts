@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.authTypes = void 0;
-const apollo_server_express_1 = require("apollo-server-express");
-exports.authTypes = (0, apollo_server_express_1.gql) `
+import { gql } from "apollo-server-express";
+
+export const authTypes = gql`
   extend type Mutation {
     signup(data: Signupinput): SignupResponse
     loginUser(data:loginUserInput):loginResponse

@@ -15,8 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prelunchUsers_1 = __importDefault(require("../models/prelunchUsers"));
 const preSignup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, fullName } = req.body;
-    console.log("it got here");
-    if (!email && fullName) {
+    if (!email && !fullName) {
         return res.status(400).send("all fields are required");
     }
     try {

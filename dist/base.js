@@ -31,36 +31,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const nodemailer_1 = __importDefault(require("nodemailer"));
 const ejs = __importStar(require("ejs"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const ids = require("short-id");
+const mailgun = require("mailgun-js");
 class Base {
     sendMailConfig() {
         const mailConfig = {
-            host: process.env.MAIL_HOST,
-            port: process.env.MAIL_PORT,
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS,
-            },
+            apiKey: process.env.EMAIL_APIKEY,
+            domain: process.env.EMAIL_DOMAIN,
         };
-        return nodemailer_1.default.createTransport(mailConfig);
+        return mailgun(mailConfig);
     }
-    getCodeNumber(name, model, objectName = "code") {
+    getCodeNumber() {
         return __awaiter(this, void 0, void 0, function* () {
-            let code;
-            let codeCheck;
-            do {
-                code = ids.generate();
-                codeCheck = yield model.findOne({ [objectName]: `${name}${code}` });
-            } while (codeCheck);
-            return `${name}${code}`;
+            return Math.floor(1000 + Math.random() * 9000);
         });
     }
     getTemplate(templateName, data) {
@@ -91,12 +78,12 @@ class Base {
             html: this.getTemplate(TemplateName.toLowerCase(), data),
         };
         this.sendMailConfig()
-            .sendMail(info)
+            .messages().send(info)
             .then((info) => {
-            console.log(`Sent -> ${info.response} `);
+            console.log(`Sent ->`);
         })
             .catch((e) => {
-            console.error(e, `Error ending email to ${to}`);
+            console.error(e, `Error sending email to ${to}`);
         });
     }
 }

@@ -17,6 +17,30 @@ const AuthMutation = {
         const { AuthDataSource } = dataSources;
         return yield new AuthDataSource().signup(data);
     }),
+    loginUser: (root, { data }, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().loginUser(data);
+    }),
+    updatePerson: (root, { data }, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().updatePerson(data);
+    }),
+    forgotPassword: (root, { data }, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().forgotPassword(data);
+    }),
+    resetPassword: (root, { data }, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().resetPassword(data);
+    }),
+    verifyEmail: (root, { data }, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().verifyEmail(data, req.user);
+    }),
+    resendVerificationCode: (root, data, { dataSources, req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+        const { AuthDataSource } = dataSources;
+        return yield new AuthDataSource().resendVerificationCode(data);
+    }),
 };
 exports.AuthMutation = AuthMutation;
 const AuthSubscription = {};

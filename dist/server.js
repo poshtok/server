@@ -51,6 +51,7 @@ const preLunchSignup_1 = __importDefault(require("./services/preLunchSignup"));
 const contactUs_1 = __importDefault(require("./services/contactUs"));
 const schema_2 = require("./schema");
 const datasources_1 = __importDefault(require("./datasources"));
+const auth_1 = __importDefault(require("./utils/lib/auth"));
 (function () {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -58,6 +59,7 @@ const datasources_1 = __importDefault(require("./datasources"));
         app.use((0, cors_1.default)());
         app.use(express_1.default.json({ limit: "100mb" }));
         app.use(express_1.default.urlencoded({ extended: true }));
+        app.use(auth_1.default);
         app.post("/contactus", contactUs_1.default);
         app.post("/prelunchsignup", preLunchSignup_1.default);
         app.get("/test", (req, res) => {
@@ -76,13 +78,14 @@ const datasources_1 = __importDefault(require("./datasources"));
                 dataSources: datasources_1.default,
                 engine: {
                     reportSchema: true
-                }
+                },
             }),
             validationRules: [(0, graphql_depth_limit_1.default)(7)],
             csrfPrevention: true,
             cache: "bounded",
             plugins: [(0, apollo_server_core_1.ApolloServerPluginLandingPageLocalDefault)({ embed: true })],
             formatError: formatError_1.default,
+            introspection: true
         });
         yield server.start();
         server.applyMiddleware({ app, path: "/", cors: false });

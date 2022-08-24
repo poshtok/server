@@ -12,6 +12,10 @@ const PersonSchema = new mongoose_1.Schema({
     fullName: {
         type: String
     },
+    emailVerified: {
+        type: Boolean,
+        default: false
+    },
     user: {
         type: mongoose_1.Schema.Types.ObjectId
     }

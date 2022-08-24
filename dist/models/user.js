@@ -19,12 +19,18 @@ const UserSchema = new mongoose_1.Schema({
         required: true,
     },
     password: { type: String, required: true },
+    emailVerificationCode: {
+        type: Number,
+    },
+    emailVerificationExpires: {
+        type: Date,
+    },
 }, {
     timestamps: true,
 });
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
     const user = this;
-    if (!user.isModified('password'))
+    if (!user.isModified("password"))
         return next();
     const salt = (0, crypto_1.randomBytes)(16).toString("hex");
     user.password = `${(0, crypto_1.scryptSync)(user.password, salt, 32).toString("hex")}:${salt}`;
