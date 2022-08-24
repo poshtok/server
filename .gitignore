@@ -3,3 +3,4 @@
 /.history/
 yarn.lock
 yarn-error.log
+dist/
