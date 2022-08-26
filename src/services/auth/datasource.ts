@@ -65,16 +65,10 @@ class AuthDataSource extends Base {
 
     const user = await __User.findById(person._id);
     if (!user) throw new AuthenticationError(NotFound);
-
-    let foundPerson = await __Person.findOne({ user: user._id });
-
-    if (!foundPerson) {
-      await __Person.create({ ...data, user: user._id });
-      return "updates successful";
-    }
     await __Person.findOneAndUpdate({ user: user._id }, { ...data });
+    let userInfo = await (__Person as any).getFew(user._id) 
 
-    return "updates successful";
+    return userInfo;
   }
   async forgotPassword(email: string, origin: string) {
     if (!origin) throw new Error(`expected origin but got ${origin}`);
@@ -221,8 +215,24 @@ this.isLoggedin(person)
   }
   async follow({ userId }: { userId: ObjectId },person:loggedInInterface) {
     await this.isLoggedin(person)
-
-  }
+     await __Person.findOneAndUpdate({user:userId},{ $push:{followers:person._id} })
+     await __Person.findOneAndUpdate({user:person._id},{ $push:{following:userId} })
+     return "followed"
+    }
+  async unFollow({ userId }: { userId: ObjectId },person:loggedInInterface) {
+    await this.isLoggedin(person)
+     await __Person.findOneAndUpdate({user:userId},{  $pull:{followers:person._id} })
+     await __Person.findOneAndUpdate({user:person._id},{ $pull:{following:userId} })
+ return "unfollowed"
+    }
+    async isFollowing({ userId }: { userId: ObjectId },person:loggedInInterface) {
+    await this.isLoggedin(person)
+     let isFollowing = await __Person.findOne({user:userId, followers:{$in:person._id }})
+      if(isFollowing){
+        return true
+      }
+      return false
+    }
 }
 
 export default AuthDataSource;

@@ -11,6 +11,7 @@ export interface PersonM {
     country:string
     fullName:string
     userName:string
+    avater:string
     DOB:Date
     user:ObjectId
     emailVerified:Boolean

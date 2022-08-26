@@ -3,6 +3,10 @@ const AuthQuery = {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().friendsToFollow(data);
   },
+  isFollowing : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().isFollowing(data,req.user);
+  },
 };
 const AuthMutation = {
   signup: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
@@ -36,6 +40,10 @@ const AuthMutation = {
   follow : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().follow(data,req.user);
+  },
+   unFollow : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().unFollow(data,req.user);
   },
 
 };
