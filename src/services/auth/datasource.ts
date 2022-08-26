@@ -11,6 +11,7 @@ import crypto from "crypto";
 import generateToken from "../../utils/lib/generateToken";
 import { ObjectId } from "mongoose";
 import ExpireTime, { isExpired } from "../../utils/lib/expireTime";
+import { validate } from "graphql";
 
 class AuthDataSource extends Base {
   async signup(data: signup) {
@@ -60,6 +61,8 @@ class AuthDataSource extends Base {
 
   async updatePerson(data: Person, person: loggedInInterface) {
     const NotFound: string = "Unable to validate authenticated account";
+   await this.isLoggedin(person)
+
     const user = await __User.findById(person._id);
     if (!user) throw new AuthenticationError(NotFound);
 
@@ -132,7 +135,7 @@ class AuthDataSource extends Base {
     person: loggedInInterface
   ) {
     const NotFound: string = "User not found";
-
+this.isLoggedin(person)
     const user = await __User.findById({ _id: person._id });
     if (!user) throw new UserInputError(NotFound);
 
@@ -150,6 +153,7 @@ class AuthDataSource extends Base {
   }
   async verifyEmail({ code }: { code: number }, person: loggedInInterface) {
     try {
+      await this.isLoggedin(person)
       let isFound: any = await __User.findOne({ _id: person._id });
       let isFoundPerson: any = await __Person.findOne({ user: person._id });
       if (isFoundPerson.emailVerified) {
@@ -209,6 +213,15 @@ class AuthDataSource extends Base {
       code: emailCode,
     });
     return "code resent";
+  }
+  async friendsToFollow({data}:{data:Array<string>}) {
+    // validate
+  return await __Person.find({phone:{$in:data}})
+  
+  }
+  async follow({ userId }: { userId: ObjectId },person:loggedInInterface) {
+    await this.isLoggedin(person)
+
   }
 }
 

@@ -1,4 +1,9 @@
-const AuthQuery = {};
+const AuthQuery = {
+  friendsToFollow : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().friendsToFollow(data);
+  },
+};
 const AuthMutation = {
   signup: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
@@ -10,7 +15,7 @@ const AuthMutation = {
   }, 
   updatePerson: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
-    return await new AuthDataSource().updatePerson(data);
+    return await new AuthDataSource().updatePerson(data,req.user);
   }, 
   forgotPassword: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
@@ -28,6 +33,11 @@ const AuthMutation = {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().resendVerificationCode(data);
   },
+  follow : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().follow(data,req.user);
+  },
+
 };
 const AuthSubscription = {};
 

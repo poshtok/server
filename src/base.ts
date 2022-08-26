@@ -4,10 +4,16 @@ import { Model } from "mongoose";
 import * as fs from "fs";
 import * as path from "path";
 import { SentMessageInfo } from "nodemailer/lib/ses-transport";
+import { AuthenticationError } from "apollo-server-express";
 const ids = require("short-id");
 const mailgun = require("mailgun-js");
 // const mg = 
 export default class Base {
+  async isLoggedin(user:any){
+    if(user === undefined){
+      throw new AuthenticationError("login to continue")
+    }
+  }
   sendMailConfig() {
     const mailConfig = {
         apiKey: process.env.EMAIL_APIKEY,
@@ -101,4 +107,5 @@ export default class Base {
         console.error(e, `Error sending email to ${to}`);
       });
   }
+ 
 }
