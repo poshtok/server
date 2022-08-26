@@ -25,6 +25,9 @@ interests:[
         type:Schema.Types.ObjectId
     }
 ],
+avater:{
+    type:String,
+},
 user:{
     type:Schema.Types.ObjectId
 },
@@ -40,4 +43,9 @@ following:[
 ],
 
 })
+
+PersonSchema.statics.getFew = async function(userId){
+return await this.findOne({user:userId},{fullName:1,userName:1,avater:1})
+   
+}
 export default model<PersonM>("person",PersonSchema)
