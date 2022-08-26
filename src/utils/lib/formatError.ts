@@ -14,6 +14,9 @@ const ErrorFormat = ( err: GraphQLError ):GraphQLFormattedError => {
   if ( err.originalError instanceof ForbiddenError ) {
     return err;
   }
+  if ( err.originalError instanceof ForbiddenError ) {
+    return err;
+  }
   console.error( `Server Error: ${ JSON.stringify( err , null , 1 ) }` );
   return new Error( 'Internal server error' );
 };

@@ -9,8 +9,14 @@ export interface loggedInInterface {
     email:string,
 }
 export interface Person {
-    fullName:string
     phone:string
     country:string
-    occupation:string
+    fullName:string
+    userName:string
+    DOB:Date
+    user:ObjectId
+    emailVerified:Boolean
+    interests:Array<ObjectId>
+    following:Array<String>
+    followers:Array<String>
 }

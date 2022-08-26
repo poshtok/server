@@ -14,4 +14,7 @@ export interface PersonM {
     DOB:Date
     user:ObjectId
     emailVerified:Boolean
+    interests:Array<ObjectId>
+    following:Array<String>
+    followers:Array<String>
 }
