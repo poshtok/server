@@ -13,7 +13,7 @@ export interface Person {
     country:string
     fullName:string
     userName:string
-    DOB:Date
+    DOB:string
     user:ObjectId
     emailVerified:Boolean
     interests:Array<ObjectId>
