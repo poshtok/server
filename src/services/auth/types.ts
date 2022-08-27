@@ -27,7 +27,7 @@ export const authTypes = gql`
   input updatePersonInput {
     country: String
     phone: String
-    DOB: DateTime
+    DOB: String
     fullName: String
     userName:String
     occupation: String
@@ -53,7 +53,7 @@ export const authTypes = gql`
     country:String
     fullName:String
     userName:String
-    DOB:DateTime
+    DOB:String
     # user:ObjectId
     avater:String
     email:String

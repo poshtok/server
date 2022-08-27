@@ -5,6 +5,8 @@ const PersonSchema = new Schema<PersonM>({
 phone:{
     type:String,
     index:true
+},DOB:{
+    type:String,
 },
 country:{
     type:String
@@ -14,7 +16,7 @@ fullName:{
 },
 userName:{
     type:String,
-    required:true
+    // required:true
 },
 emailVerified:{
     type:Boolean,

@@ -12,7 +12,7 @@ export interface PersonM {
     fullName:string
     userName:string
     avater:string
-    DOB:Date
+    DOB:string
     user:ObjectId
     emailVerified:Boolean
     interests:Array<ObjectId>
