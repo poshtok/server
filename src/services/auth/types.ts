@@ -64,6 +64,7 @@ export const authTypes = gql`
 }
   type loginResponse {
     token: String!
+    userInfo:fewUserResponse
   }
   type SignupResponse {
     message: String!
