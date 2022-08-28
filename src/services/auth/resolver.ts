@@ -23,6 +23,14 @@ const AuthQuery = {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().getUserFollowers(data,req.user);
   },
+  getCurrentUser : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getCurrentUser(req.user);
+  },
+  getUser : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getUser(data,req.user);
+  },
 };
 const AuthMutation = {
   signup: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {

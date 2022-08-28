@@ -29,6 +29,7 @@ interests:[
 ],
 avater:{
     type:String,
+    default:"https://res.cloudinary.com/defbw7rt6/image/upload/v1616062085/shopwitbee-defaultProfileImge.jpg"
 },
 user:{
     type:Schema.Types.ObjectId
@@ -38,6 +39,9 @@ followers:[
         type:Schema.Types.ObjectId
     }
 ],
+bio:{
+    type:String
+},
 following:[
     {
         type:Schema.Types.ObjectId

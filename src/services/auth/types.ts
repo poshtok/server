@@ -20,7 +20,7 @@ export const authTypes = gql`
     getFollowing:[fewUserResponse]
     getUserFollowers(userId:ID):[fewUserResponse]
     getUserFollowing(userId:ID):[fewUserResponse]
-    getuser:person
+    getUser(userId:ID):person
   }
   input Signupinput {
     email: String!
@@ -60,7 +60,8 @@ export const authTypes = gql`
     fullName:String
     userName:String
     DOB:String
-    # user:ObjectId
+    bio:String
+    _id:ID
     avater:String
     email:String
     emailVerified:Boolean
