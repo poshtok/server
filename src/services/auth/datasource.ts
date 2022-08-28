@@ -293,9 +293,9 @@ class AuthDataSource extends Base {
     try {
       await this.isLoggedin(person)
       let info:any = await __Person.findOne({user:person._id})
-      let followers = info._doc.followers.length
-      let following = info._doc.following.length
-      let _id = info._doc.user
+      let followers:Number = info._doc.followers.length
+      let following:Number = info._doc.following.length
+      let _id:ObjectId = info._doc.user
       delete info._doc.user
       let response = {...info._doc,_id,followers:followers,following}
       return response
@@ -308,9 +308,9 @@ class AuthDataSource extends Base {
     try {
       await this.isLoggedin(person)
       let info:any = await __Person.findOne({user:userId})
-      let followers = info._doc.followers.length
-      let following = info._doc.following.length
-      let _id = info._doc.user
+      let followers:Number = info._doc.followers.length
+      let following:Number = info._doc.following.length
+      let _id:ObjectId = info._doc.user
       delete info._doc.user
       let response = {...info._doc,_id,followers:followers,following}
       return response
