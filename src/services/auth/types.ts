@@ -16,6 +16,11 @@ export const authTypes = gql`
     isFollowing(userId:ID):Boolean
     friendsToFollow(data: [String]): [friendToFollowResponse]
     getCurrentUser:person
+    getFollowers:[fewUserResponse]
+    getFollowing:[fewUserResponse]
+    getUserFollowers(userId:ID):[fewUserResponse]
+    getUserFollowing(userId:ID):[fewUserResponse]
+    getuser:person
   }
   input Signupinput {
     email: String!
@@ -47,6 +52,7 @@ export const authTypes = gql`
     fullName:String
     userName:String
     avater:String
+    _id:ID
   }
   type person {
     phone:String

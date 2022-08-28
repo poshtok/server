@@ -12,6 +12,7 @@ import generateToken from "../../utils/lib/generateToken";
 import { ObjectId } from "mongoose";
 import ExpireTime, { isExpired } from "../../utils/lib/expireTime";
 import { validate } from "graphql";
+import { response } from "express";
 
 class AuthDataSource extends Base {
   async signup(data: signup) {
@@ -55,19 +56,19 @@ class AuthDataSource extends Base {
       password
     );
     if (!isPass) throw new UserInputError(NotFound);
-    let userInfo = await (__Person as any).getFew(user._id) 
+    let userInfo = await (__Person as any).getFew(user._id);
 
-    return { token: generateToken(user as any),userInfo };
+    return { token: generateToken(user as any), userInfo };
   }
 
   async updatePerson(data: Person, person: loggedInInterface) {
     const NotFound: string = "Unable to validate authenticated account";
-   await this.isLoggedin(person)
+    await this.isLoggedin(person);
 
     const user = await __User.findById(person._id);
     if (!user) throw new AuthenticationError(NotFound);
     await __Person.findOneAndUpdate({ user: user._id }, { ...data });
-    let userInfo = await (__Person as any).getFew(user._id) 
+    let userInfo = await (__Person as any).getFew(user._id);
 
     return userInfo;
   }
@@ -130,7 +131,7 @@ class AuthDataSource extends Base {
     person: loggedInInterface
   ) {
     const NotFound: string = "User not found";
-this.isLoggedin(person)
+    this.isLoggedin(person);
     const user = await __User.findById({ _id: person._id });
     if (!user) throw new UserInputError(NotFound);
 
@@ -148,7 +149,7 @@ this.isLoggedin(person)
   }
   async verifyEmail({ code }: { code: number }, person: loggedInInterface) {
     try {
-      await this.isLoggedin(person)
+      await this.isLoggedin(person);
       let isFound: any = await __User.findOne({ _id: person._id });
       let isFoundPerson: any = await __Person.findOne({ user: person._id });
       if (isFoundPerson.emailVerified) {
@@ -209,31 +210,99 @@ this.isLoggedin(person)
     });
     return "code resent";
   }
-  async friendsToFollow({data}:{data:Array<string>}) {
+  async friendsToFollow({ data }: { data: Array<string> }) {
     // validate
-  return await __Person.find({phone:{$in:data}})
-  
+    return await __Person.find({ phone: { $in: data } });
   }
-  async follow({ userId }: { userId: ObjectId },person:loggedInInterface) {
-    await this.isLoggedin(person)
-     await __Person.findOneAndUpdate({user:userId},{ $push:{followers:person._id} })
-     await __Person.findOneAndUpdate({user:person._id},{ $push:{following:userId} })
-     return "followed"
+  async follow({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+    await this.isLoggedin(person);
+    await __Person.findOneAndUpdate(
+      { user: userId },
+      { $push: { followers: person._id } }
+    );
+    await __Person.findOneAndUpdate(
+      { user: person._id },
+      { $push: { following: userId } }
+    );
+    return "followed";
+  }
+  async unFollow({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+    await this.isLoggedin(person);
+    await __Person.findOneAndUpdate(
+      { user: userId },
+      { $pull: { followers: person._id } }
+    );
+    await __Person.findOneAndUpdate(
+      { user: person._id },
+      { $pull: { following: userId } }
+    );
+    return "unfollowed";
+  }
+  async isFollowing(
+    { userId }: { userId: ObjectId },
+    person: loggedInInterface
+  ) {
+    await this.isLoggedin(person);
+    let isFollowing = await __Person.findOne({
+      user: userId,
+      followers: { $in: person._id },
+    });
+    if (isFollowing) {
+      return true;
     }
-  async unFollow({ userId }: { userId: ObjectId },person:loggedInInterface) {
-    await this.isLoggedin(person)
-     await __Person.findOneAndUpdate({user:userId},{  $pull:{followers:person._id} })
-     await __Person.findOneAndUpdate({user:person._id},{ $pull:{following:userId} })
- return "unfollowed"
-    }
-    async isFollowing({ userId }: { userId: ObjectId },person:loggedInInterface) {
-    await this.isLoggedin(person)
-     let isFollowing = await __Person.findOne({user:userId, followers:{$in:person._id }})
-      if(isFollowing){
-        return true
+    return false;
+  }
+  async getFollowers(person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let { followers }: any = await __Person.findOne({ user: person._id });
+    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
+    let userFollowers = __Person.find({ user: { $in: followers } },filter,(err, info:any) => {
+        let reponse = {...info,_id:info.user}
+        delete (response as any ).user
+        return response;
       }
-      return false
-    }
+    ).clone()
+    return userFollowers;
+  }
+  async getUserFollowers({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let { followers }: any = await __Person.findOne({ user: userId });
+    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
+    let userFollowers = __Person.find({ user: { $in: followers } },filter,(err, info:any) => {
+        let reponse = {...info,_id:info.user}
+        delete (response as any ).user
+        return response;
+      }
+    ).clone()
+    return userFollowers;
+  }
+  async getFollowing(person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let { following }: any = await __Person.findOne({ user: person._id });
+    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
+    let userFollowing = __Person.find({ user: { $in: following } },filter,(err, info:any) => {
+        let reponse = {...info,_id:info.user}
+        delete (response as any ).user
+
+        return response;
+      }
+    ).clone()
+    return userFollowing;
+  }
+ 
+  async getUserFollowing({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let { following }: any = await __Person.findOne({ user: userId });
+    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
+    let userFollowing = __Person.find({ user: { $in: following } },filter,(err, info:any) => {
+        let reponse = {...info,_id:info.user}
+        delete (response as any ).user
+
+        return response;
+      }
+    ).clone()
+    return userFollowing;
+  }
 }
 
 export default AuthDataSource;

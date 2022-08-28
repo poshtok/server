@@ -6,6 +6,22 @@ const AuthQuery = {
   isFollowing : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().isFollowing(data,req.user);
+  }, 
+  getFollowers : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getFollowers(req.user);
+  },
+  getFollowing : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getFollowing(req.user);
+  }, 
+  getUserFollowing : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getUserFollowing(data,req.user);
+  }, 
+  getUserFollowers : async ( root: any,  data : { data: string }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().getUserFollowers(data,req.user);
   },
 };
 const AuthMutation = {
