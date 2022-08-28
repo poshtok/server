@@ -289,6 +289,36 @@ class AuthDataSource extends Base {
     ).clone()
     return userFollowing;
   }
+  async getCurrentUser(person:loggedInInterface){
+    try {
+      await this.isLoggedin(person)
+      let info:any = await __Person.findOne({user:person._id})
+      let followers:Number = info._doc.followers.length
+      let following:Number = info._doc.following.length
+      let _id:ObjectId = info._doc.user
+      delete info._doc.user
+      let response = {...info._doc,_id,followers:followers,following}
+      return response
+    } catch (error:any) {
+      console.log(error.messsage)
+      return "Internal Server Error"
+    }
+  }
+   async getUser({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+    try {
+      await this.isLoggedin(person)
+      let info:any = await __Person.findOne({user:userId})
+      let followers:Number = info._doc.followers.length
+      let following:Number = info._doc.following.length
+      let _id:ObjectId = info._doc.user
+      delete info._doc.user
+      let response = {...info._doc,_id,followers:followers,following}
+      return response
+    } catch (error:any) {
+      console.log(error.messsage)
+      return "Internal Server Error"
+    }
+  }
  
   async getUserFollowing({ userId }: { userId: ObjectId }, person: loggedInInterface) {
     await this.isLoggedin(person);
