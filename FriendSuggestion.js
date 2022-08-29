@@ -1,4 +1,4 @@
-//This using depth search in JavaScript.
+//This is using depth search in JavaScript.
 class GetSuggestFriends {
  
 
@@ -44,7 +44,7 @@ class GetSuggestFriends {
     getSuggestedFriends (a) {
 		if (this.groups.size == 0)
 			this.findGroups();
-		var res = new Set();
+		let res = new Set();
 		for (let t of this.groups) {
 			if (t.has(a)) {               
 				res = t;             
@@ -64,12 +64,12 @@ g.addFriendship("Amy", "Chris");
 g.addFriendship("Sarah", "Joshua");
 g.addFriendship("Joshua", "Zoe");
 g.addFriendship("Sarah", "Jess");
-g.addFriendship("Amy", "Sam");
+g.addFriendship("Amy", "Emeka");
  
-var givenName = "Zoe";
+let givenName = "Zoe";
 console.log("Suggestion friends of " + givenName + ":");
 console.log(g.getSuggestedFriends(givenName));	
  
-givenName = "Sam
+givenName = "Emeka"
 
  
