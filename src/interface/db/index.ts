@@ -24,3 +24,10 @@ export interface PersonM {
     following:Array<String>
     followers:Array<String>
 }
+export interface PostM {
+    caption:string
+    file:string
+    likes:Number
+    tags:ObjectId
+    hashtag:Array<String>
+}
