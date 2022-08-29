@@ -1,4 +1,5 @@
 import { authTypes } from "./services/auth/types";
+import { PostTypes } from "./services/posts/types";
 import { gql } from "apollo-server-express";
 
 const linkSchemas = gql`
@@ -16,4 +17,4 @@ const linkSchemas = gql`
   }
 `;
 
-export default [linkSchemas,authTypes];
+export default [linkSchemas,authTypes,PostTypes];

@@ -1,15 +1,16 @@
 import { gql } from "apollo-server-express";
 
-const PostTypes = gql`
-extends type Mutation {
-    createpost(data:createPostInput):UcreatepostResponse
+export const PostTypes = gql`
+extend type Mutation {
+    createpost(data:createPostInput):createpostResponse
 }
-#  extends type Query {
-#  }
+ extend type Query {
+    query(data:queryFiledsInput):JSON
+ }
 
 input createPostInput {
-    caption:string
-    file:string
+    caption:String
+    file:String
 }
 
 type createpostResponse {
@@ -18,7 +19,15 @@ type createpostResponse {
       encoding: String!
       url: String!
     }
+    input queryFiledsInput {
+        key:String
+        path:QueryPath
+    }
 
-`
+ enum QueryPath {
+    TOP
+    USER
+    HASHTAG
+}
 
-export default PostTypes
+`;

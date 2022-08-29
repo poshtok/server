@@ -1,12 +1,16 @@
 import {AuthMutation,AuthQuery,AuthSubscription} from "./services/auth/resolver"
+import {PostMutation,PostQuery,PostSubscription} from "./services/posts/resolver"
 const Mutation = {
-...AuthMutation
+...AuthMutation,
+...PostMutation
 }
 const Query = {
-  ...AuthQuery
+  ...AuthQuery,
+  ...PostQuery
 }
 const Subscription = {
-  ...AuthSubscription
+  ...AuthSubscription,
+  ...PostSubscription
 }
 export {
     Mutation,
