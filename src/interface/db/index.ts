@@ -1,4 +1,7 @@
 import { Date, ObjectId } from "mongoose"
+import  { MongoosasticDocument } from 'mongoosastic'
+import  { Document } from 'mongoose'
+
 
 export interface user {
     email:string,
@@ -24,7 +27,7 @@ export interface PersonM {
     following:Array<String>
     followers:Array<String>
 }
-export interface PostM {
+export interface PostM extends Document, MongoosasticDocument {
     caption:string
     file:string
     likes:Number

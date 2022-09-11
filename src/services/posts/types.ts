@@ -22,6 +22,8 @@ type createpostResponse {
     input queryFiledsInput {
         key:String
         path:QueryPath
+        page:Int
+        limit:Int
     }
 
  enum QueryPath {
