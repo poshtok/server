@@ -58,7 +58,7 @@ class AuthDataSource extends Base {
     if (!isPass) throw new UserInputError(NotFound);
     let userInfo = await (__Person as any).getFew(user._id);
 
-    return { token: generateToken(user as any), userInfo };
+    return { token: generateToken(user as any), userInfo:{...userInfo,_id:user._id} };
   }
 
   async updatePerson(data: Person, person: loggedInInterface) {

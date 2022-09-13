@@ -51,7 +51,7 @@ following:[
 })
 
 PersonSchema.statics.getFew = async function(userId){
-return await this.findOne({user:userId},{fullName:1,userName:1,avater:1})
+return await this.findOne({user:userId},{fullName:1,userName:1,avater:1,_id:0})
    
 }
 export default model<PersonM>("person",PersonSchema)
