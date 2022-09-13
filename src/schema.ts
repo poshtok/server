@@ -3,7 +3,7 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from'graphql-type-json';
 import typeDefs from"./types";
 
-const resolvers = {
+const resolvers:any = {
   Subscription,
   Query,
   Mutation,
