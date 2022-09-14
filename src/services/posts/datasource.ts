@@ -101,19 +101,21 @@ class PostDataSource extends Base {
       Bucket: "poshvid",
       Key: `${randomImageName}.mp4`,
       ContentType: "mp4",
-      ACL: "public-read",
       Body: data.file,
+      ACL: "public-read",
     };
     try {
-      // let uploadPromise = await new AWS.S3().putObject(params).promise();
-S3.upload(params,(error:any,data:any)=>{
-  if(error){
-    console.log(error,"error")
-    return error.message
-  }
-  console.log("Successfully uploaded data to bucket",data)
+      let uploadPromise = await S3.putObject(params).promise();
+      console.log("Successfully uploaded data to bucket",uploadPromise)
+
+// S3.upload(params,(error:any,data:any)=>{
+//   if(error){
+//     console.log(error,"error")
+//     return error.message
+//   }
+//   console.log("Successfully uploaded data to bucket",data)
   return "Successfully uploaded data to bucket"
-})
+// })
       // console.log("Successfully uploaded data to bucket", uploadPromise);
       // console.log(
       //   `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`
