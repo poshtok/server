@@ -2,7 +2,8 @@ import { gql } from "apollo-server-express";
 
 export const PostTypes = gql`
 extend type Mutation {
-    createPost(data:createPostInput):createpostResponse!
+    # createPost(data:createPostInput):createpostResponse!
+    createPost(data:createPostInput):String
     likePost(_id:ID):likePostResponse!
     unLikePost(_id:ID):unLikePostResponse!
 }
@@ -12,7 +13,7 @@ extend type Mutation {
 
 input createPostInput {
     caption:String
-    file:Upload
+    file:String
     tags:[ID]
 }
 input fileType {
