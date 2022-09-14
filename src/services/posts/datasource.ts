@@ -10,6 +10,7 @@ import Paginate from "../../utils/lib/paginate";
 import getHashtags from "../../utils/lib/hashTags";
 import AWS from "aws-sdk";
 import crypto from "crypto";
+import { ObjectId } from "mongoose";
 class PostDataSource extends Base {
   async query(
     {
@@ -73,34 +74,41 @@ class PostDataSource extends Base {
   async createPost(data: createPostType, person: loggedInInterface) {
     await this.isLoggedin(person);
     const postHashTags = getHashtags(data?.caption || "");
-    const {
-      file: { body, fileName, fileSize, fileType },
-    } = data;
+    const { stream, filename, mimetype, encoding } = await data.file;
+console.log(stream,filename,mimetype,encoding)
+    // Do work 💪
+
+   
 
     // ASW code start
     AWS.config.region = process.env.S3_BUCKET_REGION
 
-    const base64data = Buffer.from(body, "binary");
-    const randomImageName = (byte = 32) =>
-      crypto.randomBytes(byte).toString("hex");
-    let params = {
-      Bucket: "poshvid",
-      Key: `${randomImageName}`,
-      ContentType: fileType,
-      ACL: "public-read",
-      Body: base64data,
-    };
-    try {
-      let uploadPromise = await new AWS.S3().putObject(params).promise();
-      console.log("Successfully uploaded data to bucket", uploadPromise);
-      console.log(
-        `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`
-      );
-    } catch (e) {
-      console.log("Error uploading data: ", e);
-    }
+    // const base64data = Buffer.from(body, "binary");
+    // const randomImageName = (byte = 32) =>
+    //   crypto.randomBytes(byte).toString("hex");
+    // let params = {
+    //   Bucket: "poshvid",
+    //   Key: `${randomImageName}`,
+    //   ContentType: fileType,
+    //   ACL: "public-read",
+    //   Body: base64data,
+    // };
+    // try {
+    //   let uploadPromise = await new AWS.S3().putObject(params).promise();
+    //   console.log("Successfully uploaded data to bucket", uploadPromise);
+    //   console.log(
+    //     `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`
+    //   );
+    // } catch (e) {
+    //   console.log("Error uploading data: ", e);
+    // }
   }
-  async postsforYou(person: loggedInInterface) {
+  async likePost({_id}:{_id:ObjectId},person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let newPostCount =   await __Post.findByIdAndUpdate(_id,{$inc:{likes:1}},{  new: true}).select({likes:1})
+    return {likes:newPostCount}
+  } 
+   async postsforYou(person: loggedInInterface) {
     await this.isLoggedin(person);
   }
   async followingPosts(person: loggedInInterface) {

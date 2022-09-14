@@ -12,8 +12,7 @@ extend type Mutation {
 
 input createPostInput {
     caption:String
-    file:fileType
-    hashTags:[String]
+    file:Upload
     tags:[ID]
 }
 input fileType {

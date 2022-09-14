@@ -5,6 +5,8 @@ import { gql } from "apollo-server-express";
 const linkSchemas = gql`
     scalar DateTime
     scalar JSON
+    scalar Upload
+  
    
   type Mutation {
     _: Boolean

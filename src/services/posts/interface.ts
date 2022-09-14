@@ -9,12 +9,6 @@ export enum QueryPathEnum {
 
 export interface createPostType {
     caption:string
-    file:{
-        body:string
-        fileName:string
-        fileSize:Number
-        fileType:string
-    }
-    hashTags:Array<string>
+    file:any
     tags:Array<ObjectId>
 }
