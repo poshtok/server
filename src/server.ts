@@ -23,15 +23,15 @@ const esClient = new Client({ node: 'http://localhost:9200' })
   const app:Application = express();
   app.use(compression());
   app.use(cors());
-  app.use(express.json({limit:"1000mb"}))
-  app.use(express.urlencoded({extended:true}))
+  app.use(express.json({limit:"100mb"}))
+  app.use(express.urlencoded({limit:"100mb", extended:true}))
   app.use(isAuth)
+  app.post("/uploadpost",AwsUpload)
   app.post("/contactus",contactUs);
   app.post("/prelunchsignup",preSignup)
   app.get("/test",(req:Request,res:Response)=>{
    return res.send("it's working")
   })
-  app.post("/uploadpost",AwsUpload)
   
 
   const httpServer = createServer(app);
