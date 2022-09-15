@@ -1,8 +1,50 @@
 import {Request,Response,NextFunction} from "express"
 import PostDataSource from "./posts/datasource"
+import fs from "fs"
+import formidable from "formidable"
+import { parseType } from "graphql"
+import AWS from "aws-sdk"
+const S3= new AWS.S3({
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.S3_BUCKET_REGION,
+      })
 const AwsUpload =async(req:Request,res:Response,next:NextFunction)=>{
-    console.log(req.body)
+    const form  = new formidable.IncomingForm();
+    form.parse(req,async function(err:any,fields:any,files:any){
+        var path = files.file.filepath;
+        fs.readFile(path, function (err, buffer) {
+
+        let params = {
+                Bucket: "poshvid",
+                Key:`${files.file.originalFilename}`,
+                // Key:( files.file.originalFilename),
+                ContentType:"video/mp4",
+                Body: buffer,
+             
+              };
+        
+          S3.putObject(params,function(err,info){
+          if(err){
+            console.log(err)
+          }else{
+            console.log(info)
+            return res.send("upload")
+          }
+        });
+
+      })
+    })
+  
+  
+
+    };
+
+
+    
+
 //    let response = await  new PostDataSource().createPost(req.body,(req as any).user)
 //    res.send(response)
-}
+// res.end()
+// }
 export default AwsUpload
