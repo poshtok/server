@@ -52,7 +52,7 @@ const esClient = new Client({ node: 'http://localhost:9200' })
     },
    }),
     validationRules: [depthLimit(7)],
-    csrfPrevention: true,
+    // csrfPrevention: true,
     cache: "bounded",
     plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
     formatError,
