@@ -16,6 +16,7 @@ import {resolvers,typeDefs} from "./schema"
 import dataSources from "./datasources";
 import isAuth from "./utils/lib/auth"
 import { Client } from '@elastic/elasticsearch'
+import AwsUpload from "./services/post";
 (async function () {
 
 const esClient = new Client({ node: 'http://localhost:9200' })
@@ -30,14 +31,8 @@ const esClient = new Client({ node: 'http://localhost:9200' })
   app.get("/test",(req:Request,res:Response)=>{
    return res.send("it's working")
   })
-  app.get('/health',function(req,res){
-    // esClient.cluster.health({},function(err:any,resp:any,status:any) {  
-    esClient.cluster.health().then((data)=>{  
-    res.send(data)
-  }).catch((err)=>{
-    res.send("error occoured")
-    console.log(err)})
-  });
+  app.post("/uploadpost",AwsUpload)
+  
 
   const httpServer = createServer(app);
 
