@@ -102,7 +102,7 @@ class PostDataSource extends Base {
       Key: `${randomImageName}.mp4`,
       ContentType: "mp4",
       Body: data.file,
-      ACL: "public-read",
+//      ACL: "public-read",
     };
     try {
       let uploadPromise = await S3.putObject(params).promise();
