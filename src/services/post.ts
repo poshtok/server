@@ -11,11 +11,18 @@ const S3 = new AWS.S3({
   region: process.env.S3_BUCKET_REGION,
 });
 const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
+ try {
+  
+
   const form = new formidable.IncomingForm();
 
   form.parse(req, async function (err: any, fields: any, files: any) {
     var path = files.file.filepath;
-    let randomName:String = NewFileName()
+    // console.log(fields,"inputs")
+    // let ok = Array.from(fields?.tags)
+    // console.log(ok,"ppp")
+    let randomName:String = NewFileName() + ".mp4"
+    console.log(randomName,"name")
     fs.readFile(path, function (err, buffer) {
       let params = {
         Bucket: "poshvid",
@@ -23,17 +30,22 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
         ContentType: "video/mp4",
         Body: buffer,
       };
-
       S3.putObject(params, function (err, info) {
         if (err) {
           console.log(err);
         } else {
           console.log(info);
+          console.log(`https://poshvid.s3.amazonaws.com/${randomName}`)
+
           return res.send("upload");
         }
       });
     });
   });
+} catch (error) {
+  console.log(error)
+  return res.status(500).send("internal server error")
+}
 };
 const Stream = async (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range;
