@@ -2,6 +2,9 @@ import {Schema,model} from "mongoose"
 import { PersonM } from "../interface/db"
 
 const PersonSchema = new Schema<PersonM>({
+    posts:{
+        type:Number
+    },
 phone:{
     type:String,
     index:true

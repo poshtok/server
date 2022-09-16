@@ -14,6 +14,7 @@ export interface HashtagM{
     hashtag:string
 }
 export interface PersonM {
+    posts:Number
     phone:string
     country:string
     fullName:string

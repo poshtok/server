@@ -21,7 +21,7 @@ class AuthDataSource extends Base {
       if (!email && !password) {
         throw new UserInputError("input values are required");
       }
-      const user = await __User.findOne({ email });
+      const user:any = await __User.findOne({ email });
 
       if (user) throw new UserInputError("email, already exist");
       const emailCode = await this.getCodeNumber();
@@ -57,8 +57,7 @@ class AuthDataSource extends Base {
     );
     if (!isPass) throw new UserInputError(NotFound);
     let userInfo = await (__Person as any).getFew(user._id);
-
-    return { token: generateToken(user as any), userInfo:{...userInfo,_id:user._id} };
+    return { token: generateToken(user as any), userInfo:{...userInfo._doc,user:user._id} };
   }
 
   async updatePerson(data: Person, person: loggedInInterface) {
@@ -325,16 +324,7 @@ class AuthDataSource extends Base {
     let { following=[] }: any = await __Person.findOne({ user: userId });
     let filter = { fullName: 1, userName: 1, avater: 1,user:1,_id:0 };
     let userFollowing:any = await __Person.find({ user: { $in: following } },filter)
-    // (err, info:any) => {
-        // let response = [{...info,_id:info.user}]
-        // console.log(response)
-
-        // delete (response as any ).user
-
-        // return response;
-      //   return info;
-      // }
-    // ).clone()
+   
 
     return userFollowing;
   }
