@@ -11,14 +11,19 @@ const S3= new AWS.S3({
       })
 const AwsUpload =async(req:Request,res:Response,next:NextFunction)=>{
     const form  = new formidable.IncomingForm();
-    form.parse(req,async function(err:any,fields:any,files:any){
-        var path = files.file.filepath;
-        fs.readFile(path, function (err, buffer) {
 
-        let params = {
+    form.parse(req,async function(err:any,fields:any,files:any){
+
+console.log(fields,"fields")
+      // var path = files.file.filepath;
+var path = fields.file;    
+    fs.readFile(path, function (err, buffer) {
+
+console.log(buffer,"buffer file")       
+ let params = {
                 Bucket: "poshvid",
-                Key:`${files.file.originalFilename}`,
-                // Key:( files.file.originalFilename),
+               // Key:`${files.file.originalFilename}`,
+                 Key:( "eme1.mp4"),
                 ContentType:"video/mp4",
                 Body: buffer,
              
