@@ -34,7 +34,7 @@ class PostDataSource extends Base {
                 { userName: { $regex: key, $options: "i" } },
               ],
             },
-            { fullName: 1, userName: 1, avater: 1, _id: 1 }
+            { fullName: 1, userName: 1, avater: 1, _id: 0,user:1 }
           )
           .limit(2);
         hashTags = await __Post.find({
