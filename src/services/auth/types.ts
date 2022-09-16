@@ -52,7 +52,8 @@ export const authTypes = gql`
     fullName:String
     userName:String
     avater:String
-    _id:ID
+    # _id:ID
+    user:ID
   }
   type person {
     phone:String
