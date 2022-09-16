@@ -4,6 +4,7 @@ import fs from "fs";
 import formidable from "formidable";
 import { parseType } from "graphql";
 import AWS from "aws-sdk";
+import NewFileName from "../utils/lib/randomName";
 const S3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -13,14 +14,12 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
   const form = new formidable.IncomingForm();
 
   form.parse(req, async function (err: any, fields: any, files: any) {
-    // console.log(fields, "fields");
     var path = files.file.filepath;
-    // var path = fields.file;
+    let randomName:String = NewFileName()
     fs.readFile(path, function (err, buffer) {
       let params = {
         Bucket: "poshvid",
-        Key:`${files.file.originalFilename}`,
-        // Key: "eme1.mp4",
+        Key:`${randomName}`,
         ContentType: "video/mp4",
         Body: buffer,
       };
