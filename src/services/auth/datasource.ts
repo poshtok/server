@@ -306,7 +306,7 @@ class AuthDataSource extends Base {
   }
    async getUser({ userId }: { userId: ObjectId }, person: loggedInInterface) {
     try {
-      await this.isLoggedin(person)
+      // await this.isLoggedin(person)
       let info:any = await __Person.findOne({user:userId})
       let followers:Number = info._doc.followers.length
       let following:Number = info._doc.following.length
@@ -323,15 +323,18 @@ class AuthDataSource extends Base {
   async getUserFollowing({ userId }: { userId: ObjectId }, person: loggedInInterface) {
     // await this.isLoggedin(person);
     let { following=[] }: any = await __Person.findOne({ user: userId });
-    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
-    let userFollowing:any = await __Person.find({ user: { $in: following } },filter,(err, info:any) => {
-        let response = {...info,_id:info.user}
-        delete (response as any ).user
+    let filter = { fullName: 1, userName: 1, avater: 1,user:1,_id:0 };
+    let userFollowing:any = await __Person.find({ user: { $in: following } },filter)
+    // (err, info:any) => {
+        // let response = [{...info,_id:info.user}]
+        // console.log(response)
 
-        return response;
-      }
-    ).clone()
-    console.log(userFollowing)
+        // delete (response as any ).user
+
+        // return response;
+      //   return info;
+      // }
+    // ).clone()
 
     return userFollowing;
   }
