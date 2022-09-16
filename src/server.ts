@@ -16,7 +16,7 @@ import {resolvers,typeDefs} from "./schema"
 import dataSources from "./datasources";
 import isAuth from "./utils/lib/auth"
 import { Client } from '@elastic/elasticsearch'
-import AwsUpload from "./services/post";
+import {AwsUpload,Stream} from "./services/post";
 (async function () {
 
 const esClient = new Client({ node: 'http://localhost:9200' })
@@ -32,6 +32,8 @@ const esClient = new Client({ node: 'http://localhost:9200' })
   app.get("/test",(req:Request,res:Response)=>{
    return res.send("it's working")
   })
+  app.get("/stream/:path",Stream)
+
   
 
   const httpServer = createServer(app);
