@@ -54,7 +54,7 @@ class PostDataSource extends Base {
               { userName: { $regex: key, $options: "i" } },
             ],
           },
-          { fullName: 1, userName: 1, avater: 1, _id: 1 }
+          { fullName: 1, userName: 1, avater: 1, user:1 }
         );
         return Paginate(response, page, limit);
       case QueryPathEnum.HASHTAG:
