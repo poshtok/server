@@ -69,6 +69,7 @@ export const authTypes = gql`
     interests:[ID!]
     following:Int
     followers:Int
+    posts:Int
 }
   type loginResponse {
     token: String!

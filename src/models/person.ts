@@ -3,7 +3,8 @@ import { PersonM } from "../interface/db"
 
 const PersonSchema = new Schema<PersonM>({
     posts:{
-        type:Number
+        type:Number,
+        default:0
     },
 phone:{
     type:String,
