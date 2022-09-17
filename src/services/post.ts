@@ -6,7 +6,7 @@ import AWS from "aws-sdk";
 import NewFileName from "../utils/lib/randomName";
 import { ObjectId } from "mongoose";
 import getHashtags from "../utils/lib/hashTags";
-import Base from "../base"
+import __Person from "../models/person"
 const S3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -34,7 +34,6 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
           ContentType: "video/mp4",
           Body: buffer,
         };
-       res.end()
         S3.putObject(params,async function (err, info) {
           if (err) {
             console.log(err);
@@ -47,6 +46,7 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
               hashTags,
               user: (req as any)?.user?._id,
             });
+            await __Person.findOneAndUpdate({user:(req as any).user._id},{$inc:{posts:1}})
             return res.send("uploaded");
           }
         });
