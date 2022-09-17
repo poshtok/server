@@ -20,10 +20,11 @@ const PostSchema = new Schema<PostM>(
       required: true,
     },
     likes: { type: Number,default:0 },
-    tags: [{ type: Schema.Types.ObjectId }],
-    hashTags: [{ type: String}],
+    tags: [{ type: Schema.Types.ObjectId, }],
+    hashTags: [{ type: String,}],
     user:{
-      type:Schema.Types.ObjectId
+      type:Schema.Types.ObjectId,
+      required:true
     }
   },
   {
