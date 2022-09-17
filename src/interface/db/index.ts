@@ -32,6 +32,7 @@ export interface PostM extends Document, MongoosasticDocument {
     caption:string
     file:string
     likes:Number
-    tags:ObjectId
-    hashtag:Array<String>
+    tags:Array<ObjectId>
+    hashTags:Array<String>
+    user:ObjectId
 }
