@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { PostM } from "../interface/db";
 import mongoosastic from "mongoosastic";
 import { Client } from '@elastic/elasticsearch'
@@ -13,15 +13,18 @@ const PostSchema = new Schema<PostM>(
   {
     caption: {
       type: String,
-      es_indexed: true
+      // es_indexed: true
     },
     file: {
       type: String,
       required: true,
     },
-    likes: { type: Number },
+    likes: { type: Number,default:0 },
     tags: [{ type: Schema.Types.ObjectId }],
-    hashtag: [{ type: String }],
+    hashTags: [{ type: String}],
+    user:{
+      type:Schema.Types.ObjectId
+    }
   },
   {
     timestamps: true,
