@@ -9,6 +9,8 @@ extend type Mutation {
 }
  extend type Query {
     query(data:queryFiledsInput):JSON  
+    getFollowingPosts:[PostResponse]
+    getPostsForYou:[PostResponse]
  }
 
 input createPostInput {
@@ -23,12 +25,16 @@ input fileType {
         fileType:String
     }
 
-type createpostResponse {
-    caption:String!
+type PostResponse {
+    caption:String
     file:String!
-    hashTags:[String]!
-    tags:[Tags]!
+    hashTags:[String]
+    tags:[Tags]
     _id:ID!
+    likes:Int!
+    views:Int!
+    comments:Int!
+    user:fewUserResponse
     }
     type Tags{
         _id:ID!
@@ -46,6 +52,7 @@ type createpostResponse {
         page:Int!
         limit:Int!
     }
+  
 
  enum QueryPath {
     TOP

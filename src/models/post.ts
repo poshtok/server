@@ -13,7 +13,6 @@ const PostSchema = new Schema<PostM>(
   {
     caption: {
       type: String,
-      // es_indexed: true
     },
     file: {
       type: String,
@@ -22,6 +21,8 @@ const PostSchema = new Schema<PostM>(
     likes: { type: Number,default:0 },
     tags: [{ type: Schema.Types.ObjectId, }],
     hashTags: [{ type: String,}],
+    comments:{type:Number,default:0 },
+    views:{type:Number,default:0 },
     user:{
       type:Schema.Types.ObjectId,
       required:true

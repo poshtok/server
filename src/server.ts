@@ -32,7 +32,9 @@ const esClient = new Client({ node: 'http://localhost:9200' })
   app.get("/test",(req:Request,res:Response)=>{
    return res.send("it's working")
   })
-  app.get("/stream/:path",Stream)
+  app.get("/stream",Stream)
+
+  
 
   
 
@@ -61,7 +63,6 @@ const esClient = new Client({ node: 'http://localhost:9200' })
     introspection:true//turn this to false on production
 
   });
-
 
 
   await server.start();
