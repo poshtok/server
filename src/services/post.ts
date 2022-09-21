@@ -20,9 +20,7 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
     const form = new formidable.IncomingForm();
     form.parse(req, async function (err: any, fields: any, files: any) {
       let path = files.file.filepath;
-      let tags: Array<ObjectId> = fields?.tags
-        .split(",")
-        .map((e: any) => e.replace(/[^\w]/g, ""));
+      let tags: Array<ObjectId> = fields?.tags?.split(",").map((e: any) => e.replace(/[^\w]/g, ""));
       let caption = fields.caption;
       let hashTags = getHashtags(caption);
       let randomName: String = NewFileName() + ".mp4";
@@ -37,6 +35,7 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
         S3.putObject(params,async function (err, info) {
           if (err) {
             console.log(err);
+            res.send("error uploading")
           } else {
             console.log("uploaded")
             await __Post.create({
@@ -61,7 +60,7 @@ const Stream = async (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range;
   const videoPath = req.params?.path;
   const videoSize = fs.statSync(videoPath).size;
-  console.log(videoPath, videoSize, "query");
+  // console.log(videoPath, videoSize, "query");
   const chunkSize = 1 * 1e6;
   const start = Number((range as string).replace(/\D/g, ""));
   const end = Math.min(start + chunkSize, videoSize - 1);

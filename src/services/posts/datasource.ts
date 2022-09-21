@@ -10,7 +10,8 @@ import Paginate from "../../utils/lib/paginate";
 import getHashtags from "../../utils/lib/hashTags";
 import AWS from "aws-sdk";
 import crypto from "crypto";
-import { ObjectId } from "mongoose";
+import { ObjectId, Schema } from "mongoose";
+// import mongoose from "mongoose"
 import { AWSS3Uploader } from "../../utils/lib/awsUploader";
 class PostDataSource extends Base {
   async query(
@@ -34,7 +35,7 @@ class PostDataSource extends Base {
                 { userName: { $regex: key, $options: "i" } },
               ],
             },
-            { fullName: 1, userName: 1, avater: 1, _id: 0,user:1 }
+            { fullName: 1, userName: 1, avater: 1, _id: 0, user: 1 }
           )
           .limit(2);
         hashTags = await __Post.find({
@@ -54,7 +55,7 @@ class PostDataSource extends Base {
               { userName: { $regex: key, $options: "i" } },
             ],
           },
-          { fullName: 1, userName: 1, avater: 1, user:1 ,_id:0}
+          { fullName: 1, userName: 1, avater: 1, user: 1, _id: 0 }
         );
         return Paginate(response, page, limit);
       case QueryPathEnum.HASHTAG:
@@ -85,35 +86,34 @@ class PostDataSource extends Base {
     // });
     // Do work 💪
     // await s3Uploader.Upload(data.file)
-//     const S3= new AWS.S3({
-//         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-//         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-//         // destinationBucketName: "po",
-//         region: process.env.S3_BUCKET_REGION,
-//       })
+    //     const S3= new AWS.S3({
+    //         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    //         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    //         // destinationBucketName: "po",
+    //         region: process.env.S3_BUCKET_REGION,
+    //       })
 
-//     // ASW code start
+    //     // ASW code start
 
-//     // const base64data = Buffer.from(body, "binary");
-//     const randomImageName = (byte = 32) => crypto.randomBytes(byte).toString("hex");
-//     let params = {
-//       Bucket: "poshvid",
-//       Key: `${randomImageName}.mp4`,
-//       ContentType: "mp4",
-//       Body: data.file,
-// //      ACL: "public-read",
-//     };
-//     try {
-//       let uploadPromise = await S3.putObject(params).promise();
-//       console.log("Successfully uploaded data to bucket",uploadPromise)
+    //     // const base64data = Buffer.from(body, "binary");
+    //     const randomImageName = (byte = 32) => crypto.randomBytes(byte).toString("hex");
+    //     let params = {
+    //       Bucket: "poshvid",
+    //       Key: `${randomImageName}.mp4`,
+    //       ContentType: "mp4",
+    //       Body: data.file,
+    // //      ACL: "public-read",
+    //     };
+    //     try {
+    //       let uploadPromise = await S3.putObject(params).promise();
+    //       console.log("Successfully uploaded data to bucket",uploadPromise)
 
+    //   return "Successfully uploaded data to bucket"
+    //       //   `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`
 
-//   return "Successfully uploaded data to bucket"
-//       //   `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`
-      
-//     } catch (e) {
-//       console.log("Error uploading data: ", e);
-//     }
+    //     } catch (e) {
+    //       console.log("Error uploading data: ", e);
+    //     }
   }
   async likePost({ _id }: { _id: ObjectId }, person: loggedInInterface) {
     await this.isLoggedin(person);
@@ -122,17 +122,42 @@ class PostDataSource extends Base {
       .select({ likes: 1 });
     return { likes: newPostCount };
   }
-  async postsforYou(person: loggedInInterface) {
+  async getPostsforYou(person: loggedInInterface) {
     await this.isLoggedin(person);
   }
-  async followingPosts(person: loggedInInterface) {
+  async getFollowingPosts(person: loggedInInterface) {
     await this.isLoggedin(person);
-    let userFollowing: any = await __User
-      .findById(person._id)
-      .select("following");
-    return await __Post
-      .find({ user: { $in: userFollowing } })
-      .sort({ likes: 1 });
+    let { following = [] }: any = await __Person
+      .findOne({ user: person._id })
+      .select({ following: 1, _id: 0 });
+
+    return await __Post.aggregate([
+      {
+        $match: {
+          user: { $in: following },
+        },
+      },
+      {
+        $lookup: {
+          from: "people",
+          localField: "user",
+          foreignField: "user",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      },
+      {
+        $sort: {
+          views: -1,
+          likes: -1,
+          comments: -1,
+        },
+      },
+    ]);
   }
 }
 
