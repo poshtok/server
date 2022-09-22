@@ -9,10 +9,14 @@ extend type Mutation {
 }
  extend type Query {
     query(data:queryFiledsInput):JSON  
-    getFollowingPosts:[PostResponse]
-    getPostsForYou:[PostResponse]
+    getFollowingPosts(data:paginate):[PostResponse]
+    getPostsForYou(data:paginate):[PostResponse]
+    getFriendsPosts(data:paginate):[PostResponse]
  }
-
+input paginate {
+    page:Int!
+    limit:Int!
+}
 input createPostInput {
     caption:String
     file:String

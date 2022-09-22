@@ -15,11 +15,15 @@ const PostQuery = {
     },
     getFollowingPosts: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
         const {PostDataSource} = dataSources
-        return await new PostDataSource().getFollowingPosts(req.user)
+        return await new PostDataSource().getFollowingPosts(data,req.user)
     } ,
     getPostsForYou: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
         const {PostDataSource} = dataSources
-        return await new PostDataSource().getPostsForYou(req.user)
+        return await new PostDataSource().getPostsForYou(data,req.user)
+    } ,
+    getFriendsPosts: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
+        const {PostDataSource} = dataSources
+        return await new PostDataSource().getFriendsPosts(data,req.user)
     }
 }
 const PostSubscription = {}
