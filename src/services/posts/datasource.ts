@@ -117,16 +117,54 @@ class PostDataSource extends Base {
   }
   async likePost({ _id }: { _id: ObjectId }, person: loggedInInterface) {
     await this.isLoggedin(person);
-    let newPostCount = await __Post
+    let {likes}:any = await __Post
       .findByIdAndUpdate(_id, { $inc: { likes: 1 } }, { new: true })
-      .select({ likes: 1 });
-    return { likes: newPostCount };
+      .select({ likes: 1,_id:0 });
+    return { likes };
   }
-  async getPostsforYou(person: loggedInInterface) {
+  async getPostsForYou(
+    {data}: {data:{ page: number; limit: number }},
+    person: loggedInInterface
+  ) {
     await this.isLoggedin(person);
+    let dataLimit = data.limit ;
+    let dataPage = data.page - 1  ;
+    return await __Post.aggregate([
+      {
+        $match: {},
+      },
+      {
+        $lookup: {
+          from: "people",
+          localField: "user",
+          foreignField: "user",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      },
+      {
+        $limit: dataLimit,
+      },
+      {
+        $skip: (dataLimit * dataPage),
+      },
+      {
+        $sort: {
+          likes: -1,
+          views: -1,
+          comments: -1,
+        },
+      },
+    ]);
   }
-  async getFollowingPosts(person: loggedInInterface) {
+  async getFollowingPosts({data}: {data:{ page: number; limit: number }},person: loggedInInterface) {
     await this.isLoggedin(person);
+    let dataLimit = data.limit ;
+    let dataPage = data.page - 1  ;
     let { following = [] }: any = await __Person
       .findOne({ user: person._id })
       .select({ following: 1, _id: 0 });
@@ -149,6 +187,56 @@ class PostDataSource extends Base {
         $unwind: {
           path: "$user",
         },
+      }, {
+        $limit: dataLimit,
+      },
+      {
+        $skip: (dataLimit * dataPage),
+      },
+      {
+        $sort: {
+          views: -1,
+          likes: -1,
+          comments: -1,
+        },
+      },
+    ]);
+  }
+  
+    async getFriendsPosts( {data}: {data:{ page: number; limit: number }},person: loggedInInterface) {
+    await this.isLoggedin(person);
+    let dataLimit = data.limit ;
+    let dataPage = data.page - 1
+    let { following = [], followers = [] }: any = await __Person
+      .findOne({ user: person._id })
+      .select({ following: 1, followers: 1, _id: 0 });
+
+    let friends = await following.filter((_id: any) =>
+      followers.some((id: any) => _id.toString() === id.toString())
+    );
+    return await __Post.aggregate([
+      {
+        $match: {
+          user: { $in: friends },
+        },
+      },
+      {
+        $lookup: {
+          from: "people",
+          localField: "user",
+          foreignField: "user",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      }, {
+        $limit: dataLimit,
+      },
+      {
+        $skip: (dataLimit * dataPage),
       },
       {
         $sort: {
