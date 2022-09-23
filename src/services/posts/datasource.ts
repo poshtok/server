@@ -128,6 +128,12 @@ class PostDataSource extends Base {
       return { likes: postLikes.likes };
     }
   }
+  async hasLikedPost({ _id }: { _id: ObjectId }, person: loggedInInterface){
+    await this.isLoggedin(person);
+    let isLiked = await __Person.findOne({user:person._id,likedPosts:{$in:_id}})
+     return isLiked ? true :false
+    
+  }
   async getPostsForYou(
     { data }: { data: { page: number; limit: number } },
     person: loggedInInterface

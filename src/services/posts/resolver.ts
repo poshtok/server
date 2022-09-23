@@ -32,6 +32,10 @@ const PostQuery = {
     getFriendsPosts: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
         const {PostDataSource} = dataSources
         return await new PostDataSource().getFriendsPosts(data,req.user)
+    } ,
+    hasLikedPost: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
+        const {PostDataSource} = dataSources
+        return await new PostDataSource().hasLikedPost(data,req.user)
     }
 }
 const PostSubscription = {}
