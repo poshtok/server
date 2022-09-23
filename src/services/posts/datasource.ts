@@ -10,7 +10,7 @@ import Paginate from "../../utils/lib/paginate";
 import getHashtags from "../../utils/lib/hashTags";
 import AWS from "aws-sdk";
 import crypto from "crypto";
-import { ObjectId, Schema } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 // import mongoose from "mongoose"
 import { AWSS3Uploader } from "../../utils/lib/awsUploader";
 class PostDataSource extends Base {
@@ -117,18 +117,24 @@ class PostDataSource extends Base {
   }
   async likePost({ _id }: { _id: ObjectId }, person: loggedInInterface) {
     await this.isLoggedin(person);
-    let {likes}:any = await __Post
-      .findByIdAndUpdate(_id, { $inc: { likes: 1 } }, { new: true })
-      .select({ likes: 1,_id:0 });
-    return { likes };
+    let postLikes: any = await __Post.findById(_id);
+    let isLiked: any = await __Person.findOne({ $and: [{ user:person._id }, { likedPosts: { $in: _id } }]});
+    if (!isLiked) {
+      await __Person.findOneAndUpdate({user:person._id},{$push:{likedPosts:_id}})
+      postLikes.likes += 1;
+       await postLikes.save();
+      return { likes: postLikes.likes };
+    } else {
+      return { likes: postLikes.likes };
+    }
   }
   async getPostsForYou(
-    {data}: {data:{ page: number; limit: number }},
+    { data }: { data: { page: number; limit: number } },
     person: loggedInInterface
   ) {
     await this.isLoggedin(person);
-    let dataLimit = data.limit ;
-    let dataPage = data.page - 1  ;
+    let dataLimit = data.limit;
+    let dataPage = data.page - 1;
     return await __Post.aggregate([
       {
         $match: {},
@@ -150,7 +156,7 @@ class PostDataSource extends Base {
         $limit: dataLimit,
       },
       {
-        $skip: (dataLimit * dataPage),
+        $skip: dataLimit * dataPage,
       },
       {
         $sort: {
@@ -161,10 +167,13 @@ class PostDataSource extends Base {
       },
     ]);
   }
-  async getFollowingPosts({data}: {data:{ page: number; limit: number }},person: loggedInInterface) {
+  async getFollowingPosts(
+    { data }: { data: { page: number; limit: number } },
+    person: loggedInInterface
+  ) {
     await this.isLoggedin(person);
-    let dataLimit = data.limit ;
-    let dataPage = data.page - 1  ;
+    let dataLimit = data.limit;
+    let dataPage = data.page - 1;
     let { following = [] }: any = await __Person
       .findOne({ user: person._id })
       .select({ following: 1, _id: 0 });
@@ -187,11 +196,12 @@ class PostDataSource extends Base {
         $unwind: {
           path: "$user",
         },
-      }, {
+      },
+      {
         $limit: dataLimit,
       },
       {
-        $skip: (dataLimit * dataPage),
+        $skip: dataLimit * dataPage,
       },
       {
         $sort: {
@@ -202,11 +212,56 @@ class PostDataSource extends Base {
       },
     ]);
   }
-  
-    async getFriendsPosts( {data}: {data:{ page: number; limit: number }},person: loggedInInterface) {
+  async getLikedPosts(
+    { data }: { data: { page: number; limit: number } },
+    person: loggedInInterface
+  ) {
     await this.isLoggedin(person);
-    let dataLimit = data.limit ;
-    let dataPage = data.page - 1
+    let dataLimit = data.limit;
+    let dataPage = data.page - 1;
+    let { likedPosts = [] }: any = await __Person
+      .findOne({ user: person._id })
+      .select({ likedPosts: 1, _id: 0 });
+    return await __Post.aggregate([
+      {
+        $match: {
+          _id: { $in: likedPosts },
+        },
+      },
+      {
+        $lookup: {
+          from: "people",
+          localField: "user",
+          foreignField: "user",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      },
+      {
+        $limit: dataLimit,
+      },
+      {
+        $skip: dataLimit * dataPage,
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+  }
+
+  async getFriendsPosts(
+    { data }: { data: { page: number; limit: number } },
+    person: loggedInInterface
+  ) {
+    await this.isLoggedin(person);
+    let dataLimit = data.limit;
+    let dataPage = data.page - 1;
     let { following = [], followers = [] }: any = await __Person
       .findOne({ user: person._id })
       .select({ following: 1, followers: 1, _id: 0 });
@@ -232,17 +287,60 @@ class PostDataSource extends Base {
         $unwind: {
           path: "$user",
         },
-      }, {
+      },
+      {
         $limit: dataLimit,
       },
       {
-        $skip: (dataLimit * dataPage),
+        $skip: dataLimit * dataPage,
       },
       {
         $sort: {
           views: -1,
           likes: -1,
           comments: -1,
+        },
+      },
+    ]);
+  }
+  async getUserPosts(
+    { data }: { data: { page: number; limit: number } },
+    person: loggedInInterface
+  ) {
+    await this.isLoggedin(person);
+    let dataLimit = data.limit;
+    let dataPage = data.page - 1;
+
+    let id = new mongoose.Types.ObjectId(person._id as any);
+
+    return await __Post.aggregate([
+      {
+        $match: {
+          user: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "people",
+          localField: "user",
+          foreignField: "user",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      },
+      {
+        $limit: dataLimit,
+      },
+      {
+        $skip: dataLimit * dataPage,
+      },
+      {
+        $sort: {
+          createdAt: -1,
         },
       },
     ]);

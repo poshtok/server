@@ -25,6 +25,7 @@ export interface PersonM {
     user:ObjectId
     emailVerified:Boolean
     interests:Array<ObjectId>
+    likedPosts:Array<ObjectId>
     following:Array<String>
     followers:Array<String>
 }
