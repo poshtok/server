@@ -12,6 +12,8 @@ extend type Mutation {
     getFollowingPosts(data:paginate):[PostResponse]
     getPostsForYou(data:paginate):[PostResponse]
     getFriendsPosts(data:paginate):[PostResponse]
+    getUserPosts(data:paginate):[PostResponse]
+    getLikedPosts(data:paginate):[PostResponse]
  }
 input paginate {
     page:Int!

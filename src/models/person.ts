@@ -31,6 +31,11 @@ interests:[
         type:Schema.Types.ObjectId
     }
 ],
+likedPosts:[
+    {
+        type:Schema.Types.ObjectId
+    }
+],
 avater:{
     type:String,
     default:"https://res.cloudinary.com/defbw7rt6/image/upload/v1616062085/shopwitbee-defaultProfileImge.jpg"
