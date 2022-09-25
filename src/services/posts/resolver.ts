@@ -6,6 +6,10 @@ const PostMutation = {
     likePost: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
         const {PostDataSource} = dataSources
         return await new PostDataSource().likePost(data,req.user)
+    } ,
+    viewPost: async ( root: any,  data : { data: any }, { dataSources, req, res }: any) => {
+        const {PostDataSource} = dataSources
+        return await new PostDataSource().viewPost(data,req.user)
     }
 }
 const PostQuery = {

@@ -71,6 +71,11 @@ class AuthDataSource extends Base {
 
     return userInfo;
   }
+  async updateAvater({avater}:{avater:string},person: loggedInInterface){
+await this.isLoggedin(person)
+console.log(avater)
+return "image url"
+  }
   async forgotPassword(email: string, origin: string) {
     if (!origin) throw new Error(`expected origin but got ${origin}`);
     const account = await __User.findOne({ email });

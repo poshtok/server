@@ -134,6 +134,12 @@ class PostDataSource extends Base {
      return isLiked ? true :false
     
   }
+  async viewPost({ _id }: { _id: ObjectId }, person: loggedInInterface){
+    await this.isLoggedin(person);
+     await __Post.findByIdAndUpdate(_id,{$inc:{views:1}})
+     return "viewed"
+    
+  }
   async getPostsForYou(
     { data }: { data: { page: number; limit: number } },
     person: loggedInInterface

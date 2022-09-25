@@ -11,6 +11,7 @@ export const authTypes = gql`
     resendVerificationCode(email: String): String
     follow(userId:ID):String
     unFollow(userId:ID):String
+    updateAvater(avater:String):String
   }
   extend type Query {
     isFollowing(userId:ID):Boolean
