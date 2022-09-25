@@ -12,7 +12,7 @@ import AWS from "aws-sdk";
 import crypto from "crypto";
 import mongoose, { ObjectId, Schema } from "mongoose";
 // import mongoose from "mongoose"
-import { AWSS3Uploader } from "../../utils/lib/awsUploader";
+// import { AWSS3Uploader } from "../../utils/lib/awsUploader";
 class PostDataSource extends Base {
   async query(
     {

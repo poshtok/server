@@ -7,11 +7,13 @@ import NewFileName from "../utils/lib/randomName";
 import { ObjectId } from "mongoose";
 import getHashtags from "../utils/lib/hashTags";
 import __Person from "../models/person"
-const S3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.S3_BUCKET_REGION,
-});
+import awsUploader from "../utils/lib/awsUploader";
+// const S3 = new AWS.S3({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.S3_BUCKET_REGION,
+// });
+
 const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if((req as any).user === undefined){
@@ -25,30 +27,26 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
       let hashTags = getHashtags(caption);
       let randomName: String = NewFileName() + ".mp4";
 
-      fs.readFile(path,  function (err, buffer) {
+      fs.readFile(path,  async function (err, buffer) {
         let params = {
           Bucket: "poshvid",
           Key: `${randomName}`,
           ContentType: "video/mp4",
           Body: buffer,
         };
-        S3.putObject(params,async function (err, info) {
-          if (err) {
-            console.log(err);
-            res.send("error uploading")
-          } else {
-            console.log("uploaded")
-            await __Post.create({
-              caption,
-              tags,
-              file: `https://poshvid.s3.amazonaws.com/${randomName}`,
-              hashTags,
-              user: (req as any)?.user?._id,
-            });
-            await __Person.findOneAndUpdate({user:(req as any).user._id},{$inc:{posts:1}})
-            return res.send("uploaded");
-          }
-        });
+        let response = await awsUploader.upload(params)
+        if(response !== "uploaded"){
+         return res.send("error occured while uploading")
+        }
+        await __Post.create({
+                caption,
+                tags,
+                file: `https://poshvid.s3.amazonaws.com/${randomName}`,
+                hashTags,
+                user: (req as any)?.user?._id,
+              });
+              await __Person.findOneAndUpdate({user:(req as any).user._id},{$inc:{posts:1}})
+              return res.send("uploaded");
       });
     });
   } catch (error) {
