@@ -13,6 +13,9 @@ import { ObjectId } from "mongoose";
 import ExpireTime, { isExpired } from "../../utils/lib/expireTime";
 import { validate } from "graphql";
 import { response } from "express";
+import awsUploader from "../../utils/lib/awsUploader";
+import NewFileName from "../../utils/lib/randomName";
+import base64Mime from "../../utils/lib/readBufferImage";
 
 class AuthDataSource extends Base {
   async signup(data: signup) {
@@ -21,7 +24,7 @@ class AuthDataSource extends Base {
       if (!email && !password) {
         throw new UserInputError("input values are required");
       }
-      const user:any = await __User.findOne({ email });
+      const user: any = await __User.findOne({ email });
 
       if (user) throw new UserInputError("email, already exist");
       const emailCode = await this.getCodeNumber();
@@ -57,7 +60,10 @@ class AuthDataSource extends Base {
     );
     if (!isPass) throw new UserInputError(NotFound);
     let userInfo = await (__Person as any).getFew(user._id);
-    return { token: generateToken(user as any), userInfo:{...userInfo._doc,user:user._id} };
+    return {
+      token: generateToken(user as any),
+      userInfo: { ...userInfo._doc, user: user._id },
+    };
   }
 
   async updatePerson(data: Person, person: loggedInInterface) {
@@ -71,10 +77,31 @@ class AuthDataSource extends Base {
 
     return userInfo;
   }
-  async updateAvater({avater}:{avater:string},person: loggedInInterface){
-await this.isLoggedin(person)
-console.log(avater)
-return "image url"
+  async updateAvater(data: any, person: loggedInInterface) {
+    await this.isLoggedin(person);
+
+    let { mimeType, type } = base64Mime(data);
+    let randomName: String = NewFileName() + "." + (type as unknown as string);
+    let avater = Buffer.from(
+      data.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+
+    let params = {
+      Bucket: "poshvid/avater",
+      Key: `${randomName}`,
+      ContentType: mimeType as string,
+      ContentEncoding: "base64",
+      Body: avater,
+    };
+    let response = await awsUploader.upload(params);
+
+    if (response !== "uploaded") {
+      return "error uploading avater";
+    }
+    const imageUrl = `https://poshvid.s3.amazonaws.com/avater/${randomName}`
+    await __Person.findOneAndUpdate({user:person._id},{avater:imageUrl})
+    return imageUrl;
   }
   async forgotPassword(email: string, origin: string) {
     if (!origin) throw new Error(`expected origin but got ${origin}`);
@@ -259,77 +286,88 @@ return "image url"
   async getFollowers(person: loggedInInterface) {
     await this.isLoggedin(person);
     let { followers }: any = await __Person.findOne({ user: person._id });
-    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
-    let userFollowers = __Person.find({ user: { $in: followers } },filter,(err, info:any) => {
-        let reponse = {...info,_id:info.user}
-        delete (response as any ).user
+    let filter = { fullName: 1, userName: 1, avater: 1, user: 1 };
+    let userFollowers = __Person
+      .find({ user: { $in: followers } }, filter, (err, info: any) => {
+        let reponse = { ...info, _id: info.user };
+        delete (response as any).user;
         return response;
-      }
-    ).clone()
+      })
+      .clone();
     return userFollowers;
   }
-  async getUserFollowers({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+  async getUserFollowers(
+    { userId }: { userId: ObjectId },
+    person: loggedInInterface
+  ) {
     // await this.isLoggedin(person);
-    let { followers=[] }: any = await __Person.findOne({ user: userId });
-    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
-    let userFollowers = __Person.find({ user: { $in: followers } },filter,(err, info:any) => {
-        let response = {...info,_id:info.user}
-        delete (response as any ).user
+    let { followers = [] }: any = await __Person.findOne({ user: userId });
+    let filter = { fullName: 1, userName: 1, avater: 1, user: 1 };
+    let userFollowers = __Person
+      .find({ user: { $in: followers } }, filter, (err, info: any) => {
+        let response = { ...info, _id: info.user };
+        delete (response as any).user;
         return response;
-      }
-    ).clone()
+      })
+      .clone();
     return userFollowers;
   }
   async getFollowing(person: loggedInInterface) {
     await this.isLoggedin(person);
     let { following }: any = await __Person.findOne({ user: person._id });
-    let filter = { fullName: 1, userName: 1, avater: 1,user:1 };
-    let userFollowing = __Person.find({ user: { $in: following } },filter,(err, info:any) => {
-        let reponse = {...info,_id:info.user}
-        delete (response as any ).user
+    let filter = { fullName: 1, userName: 1, avater: 1, user: 1 };
+    let userFollowing = __Person
+      .find({ user: { $in: following } }, filter, (err, info: any) => {
+        let reponse = { ...info, _id: info.user };
+        delete (response as any).user;
 
         return response;
-      }
-    ).clone()
+      })
+      .clone();
     return userFollowing;
   }
-  async getCurrentUser(person:loggedInInterface){
+  async getCurrentUser(person: loggedInInterface) {
     try {
-      await this.isLoggedin(person)
-      let info:any = await __Person.findOne({user:person._id})
-      let followers:Number = info._doc.followers.length
-      let following:Number = info._doc.following.length
-      let _id:ObjectId = info._doc.user
-      delete info._doc.user
-      let response = {...info._doc,_id,followers:followers,following}
-      return response
-    } catch (error:any) {
-      console.log(error.messsage)
-      return "Internal Server Error"
+      await this.isLoggedin(person);
+      let info: any = await __Person.findOne({ user: person._id });
+      let followers: Number = info._doc.followers.length;
+      let following: Number = info._doc.following.length;
+      let _id: ObjectId = info._doc.user;
+      delete info._doc.user;
+      let response = { ...info._doc, _id, followers: followers, following };
+      return response;
+    } catch (error: any) {
+      console.log(error.messsage);
+      return "Internal Server Error";
     }
   }
-   async getUser({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+  async getUser({ userId }: { userId: ObjectId }, person: loggedInInterface) {
     try {
       // await this.isLoggedin(person)
-      let info:any = await __Person.findOne({user:userId})
-      let followers:Number = info._doc.followers.length
-      let following:Number = info._doc.following.length
-      let _id:ObjectId = info._doc.user
-      delete info._doc.user
-      let response = {...info._doc,_id,followers:followers,following}
-      return response
-    } catch (error:any) {
-      console.log(error.messsage)
-      return "Internal Server Error"
+      let info: any = await __Person.findOne({ user: userId });
+      let followers: Number = info._doc.followers.length;
+      let following: Number = info._doc.following.length;
+      let _id: ObjectId = info._doc.user;
+      delete info._doc.user;
+      let response = { ...info._doc, _id, followers: followers, following };
+      return response;
+    } catch (error: any) {
+      console.log(error.messsage);
+      return "Internal Server Error";
     }
   }
- 
-  async getUserFollowing({ userId }: { userId: ObjectId }, person: loggedInInterface) {
+
+  async getUserFollowing(
+    { userId }: { userId: ObjectId },
+    person: loggedInInterface
+  ) {
     // await this.isLoggedin(person);
-    let { following=[] }: any = await __Person.findOne({ user: userId });
-    let filter = { fullName: 1, userName: 1, avater: 1,user:1,_id:0 };
-    let userFollowing:any = await __Person.find({ user: { $in: following } },filter)
-   
+    let { following = [] }: any = await __Person.findOne({ user: userId });
+    let filter = { fullName: 1, userName: 1, avater: 1, user: 1, _id: 0 };
+    let userFollowing: any = await __Person.find(
+      { user: { $in: following } },
+      filter
+    );
 
     return userFollowing;
   }
