@@ -4,15 +4,17 @@ export const PostTypes = gql`
 extend type Mutation {
     # createPost(data:createPostInput):createpostResponse!
     createPost(data:createPostInput):String
-    likePost(_id:ID):likePostResponse!
-    unLikePost(_id:ID):unLikePostResponse!
+    likePost(_id:ID!):likePostResponse!
+    unLikePost(_id:ID!):unLikePostResponse!
+    viewPost(_id:ID!):String
+
 }
  extend type Query {
     query(data:queryFiledsInput):JSON  
     getFollowingPosts(data:paginate):[PostResponse]
     getPostsForYou(data:paginate):[PostResponse]
     getFriendsPosts(data:paginate):[PostResponse]
-    getUserPosts(data:paginate):[PostResponse]
+    getUserPosts(data:paginate!):[PostResponse]
     getLikedPosts(data:paginate):[PostResponse]
     hasLikedPost(_id:ID):Boolean
  }

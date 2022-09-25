@@ -44,6 +44,10 @@ const AuthMutation = {
   updatePerson: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
     return await new AuthDataSource().updatePerson(data,req.user);
+  },
+  updateAvater: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
+    const { AuthDataSource } = dataSources;
+    return await new AuthDataSource().updateAvater(data,req.user);
   }, 
   forgotPassword: async ( root: any, { data }: { data: any }, { dataSources, req, res }: any) => {
     const { AuthDataSource } = dataSources;
