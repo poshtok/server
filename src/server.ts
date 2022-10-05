@@ -32,7 +32,7 @@ const esClient = new Client({ node: 'http://localhost:9200' })
   app.get("/test",(req:Request,res:Response)=>{
    return res.send("it's working")
   })
-  app.get("/stream",Stream)
+  app.get("/stream/:id",Stream)
 
   
 

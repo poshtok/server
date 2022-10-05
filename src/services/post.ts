@@ -55,25 +55,14 @@ const AwsUpload = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 const Stream = async (req: Request, res: Response, next: NextFunction) => {
-  const range = req.headers.range;
-  const videoPath = req.params?.path;
-  const videoSize = fs.statSync(videoPath).size;
-  // console.log(videoPath, videoSize, "query");
-  const chunkSize = 1 * 1e6;
-  const start = Number((range as string).replace(/\D/g, ""));
-  const end = Math.min(start + chunkSize, videoSize - 1);
+  let fileKey:any = await (__Post as any).getFileName(req.params.id)
+  const bucketParams = {
+        Bucket:process.env.S3_BUCKET_NAME as string,
+        Key: "lWVkuc8.mp4"
+        // Key: fileKey
+    }
+let stream = await awsUploader.createAWSStream(bucketParams)
 
-  const contentLength = end - start + 1;
-
-  const headers = {
-    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-    "Accept-Ranges": "bytes",
-    "Content-Length": contentLength,
-    "Content-Type": "video/mp4",
-  };
-  res.writeHead(206, headers);
-
-  const stream = fs.createReadStream(videoPath, { start, end });
   stream.pipe(res);
 };
 

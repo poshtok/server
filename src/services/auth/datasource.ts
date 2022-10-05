@@ -100,6 +100,7 @@ class AuthDataSource extends Base {
       return "error uploading avater";
     }
     const imageUrl = `https://poshvid.s3.amazonaws.com/avater/${randomName}`
+    // imageUrl.slice(33)
     await __Person.findOneAndUpdate({user:person._id},{avater:imageUrl})
     return imageUrl;
   }
